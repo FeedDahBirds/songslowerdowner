@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ed">
+  <meta name="description" content="Slow down a song, keep its pitch, and loop the part you want to learn. A private, local audio practice tool.">
+  <title>Slowroom — Song Slower Downer</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./src/styles.css">
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body data-loaded="false">
+  <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zm6 0h4v14h-4z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-loop" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4m14-1v2a3 3 0 0 1-3 3H3"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M5 5v14m15-14L9 12l11 7Z"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7V5a1 1 0 0 1 1-1h5l3 3h8a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4Zm4 3a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0v4m-4 5v2"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13M9 9l11-2"/><ellipse cx="6" cy="18" rx="3" ry="3"/><ellipse cx="17" cy="16" rx="3" ry="3"/></symbol>
+  </svg>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Slowroom home"><span class="brand-icon" aria-hidden="true">s<span>≋</span></span>slowroom<span class="brand-period">.</span></a>
+    <span class="local-badge"><span class="status-dot"></span>Local files. Just you.</span>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="title">
+      <div><p class="eyebrow">A LITTLE SPACE TO PRACTICE</p><h1 id="title">Find every <em>note.</em></h1></div>
+      <p class="intro-copy">Slow it down. Keep the pitch.<br> Make that tricky part feel familiar.</p>
+    </section>
+    <section class="player-card" aria-label="Audio practice player">
+      <div id="drop-zone" class="drop-zone">
+        <div class="file-icon"><svg aria-hidden="true"><use href="#i-note"/></svg></div>
+        <div class="file-info"><p class="eyebrow">YOUR TRACK</p><h2 id="file-name">Bring a song to the room</h2><p id="file-meta">Drop an audio file here, or choose one to begin.</p></div>
+        <button id="open-file" class="button button-dark"><svg aria-hidden="true"><use href="#i-folder"/></svg><span id="open-file-label">Open audio</span></button>
+        <input id="file-input" type="file" accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.aac" hidden aria-label="Choose an audio file">
+      </div>
+      <p id="error" class="error-message" role="alert" hidden></p>
+      <div class="deck">
+        <div class="deck-topline"><span id="playback-status">READY WHEN YOU ARE</span><span id="track-description">THE WHOLE SONG, AT YOUR PACE</span></div>
+        <div id="timeline" class="timeline" style="--position:0%;--a:0%;--b:100%">
+          <div class="timeline-lines" aria-hidden="true"></div>
+          <div class="loop-selection" aria-hidden="true"><span class="marker marker-a">A</span><span class="marker marker-b">B</span></div>
+          <div class="timeline-progress" aria-hidden="true"></div><div class="playhead" aria-hidden="true"></div>
+          <input id="seek" type="range" min="0" max="1" step="0.01" value="0" aria-label="Seek position" data-needs-audio disabled>
+          <div id="ruler" class="ruler" aria-hidden="true"><span>0:00</span><span>—</span><span>—</span><span>—</span><span>—</span></div>
+          <p class="timeline-hint">Your next good listen starts here</p>
+        </div>
+        <div class="transport">
+          <div class="time-display"><span id="current-time">0:00.0</span><span class="time-divider">/</span><span id="duration">0:00</span></div>
+          <div class="transport-buttons">
+            <button id="restart" class="icon-button" aria-label="Restart" title="Restart at the beginning of the song or loop" data-needs-audio disabled><svg aria-hidden="true"><use href="#i-back"/></svg></button>
+            <button id="play" class="play-button" aria-label="Play" title="Play / pause (Space)" data-needs-audio disabled><svg aria-hidden="true"><use id="play-icon" href="#i-play"/></svg></button>
+            <button id="quick-loop" class="icon-button" aria-label="Enable loop shortcut" aria-pressed="false" title="Toggle loop (L)" data-needs-audio disabled><svg aria-hidden="true"><use href="#i-loop"/></svg></button>
+          </div>
+          <div class="volume-control"><svg aria-hidden="true"><use href="#i-volume"/></svg><input id="volume" type="range" min="0" max="100" step="1" value="80" aria-label="Volume" data-needs-audio disabled></div>
+        </div>
+      </div>
+    </section>
+    <div class="practice-controls">
+      <section class="control-card speed-card" aria-labelledby="speed-title">
+        <div class="card-heading"><h2 id="speed-title">Take your time</h2><span id="pitch-badge" class="pitch-badge"><svg aria-hidden="true"><use href="#i-lock"/></svg>Pitch locked</span></div>
+        <p class="card-copy">Same notes. A little more room between them.</p>
+        <div class="speed-readout"><output id="speed-value" for="speed">100<span>%</span></output><span id="speed-caption">Original speed</span></div>
+        <div class="speed-slider"><span>25%</span><input id="speed" type="range" min="25" max="100" step="1" value="100" aria-label="Playback speed" data-needs-audio disabled><span>100%</span></div>
+        <div class="presets" role="group" aria-label="Speed presets"><button data-speed="25" data-needs-audio disabled aria-pressed="false">25%</button><button data-speed="50" data-needs-audio disabled aria-pressed="false">50%</button><button data-speed="75" data-needs-audio disabled aria-pressed="false">75%</button><button data-speed="100" data-needs-audio disabled aria-pressed="true">100%</button></div>
+      </section>
+      <section class="control-card loop-card" aria-labelledby="loop-title">
+        <div class="card-heading"><h2 id="loop-title">Stay with a phrase</h2><button id="clear-loop" class="text-button" data-needs-audio disabled>Clear loop</button></div>
+        <p class="card-copy">Pick two points. Listen until it clicks.</p>
+        <div class="loop-points">
+          <div class="loop-point"><div class="point-heading"><label for="loop-start"><span class="point-badge">A</span>Loop start</label><button id="set-a" class="set-button" title="Set start at the playhead ([)" data-needs-audio disabled>Set A</button></div><input id="loop-start" aria-label="Loop start" type="text" inputmode="decimal" value="0:00.0" spellcheck="false" autocomplete="off" aria-describedby="loop-message" data-needs-audio disabled></div>
+          <span class="point-connector" aria-hidden="true">→</span>
+          <div class="loop-point"><div class="point-heading"><label for="loop-end"><span class="point-badge">B</span>Loop end</label><button id="set-b" class="set-button" title="Set end at the playhead (])" data-needs-audio disabled>Set B</button></div><input id="loop-end" aria-label="Loop end" type="text" inputmode="decimal" value="0:00.0" spellcheck="false" autocomplete="off" aria-describedby="loop-message" data-needs-audio disabled></div>
+        </div>
+        <div class="loop-bottom"><button id="loop-toggle" class="button loop-toggle" aria-label="Enable loop" aria-pressed="false" data-needs-audio disabled><svg aria-hidden="true"><use href="#i-loop"/></svg><span id="loop-toggle-label">Enable loop</span></button><span id="loop-length">A little repetition goes a long way.</span></div>
+        <p id="loop-message" class="loop-message" role="status">Set points at the playhead or type a timestamp.</p>
+      </section>
+    </div>
+    <footer class="practice-footer"><p><svg aria-hidden="true"><use href="#i-lock"/></svg>Your audio stays on your device.</p><div class="shortcuts"><span><kbd>space</kbd> play / pause</span><span><kbd>[</kbd><kbd>]</kbd> set A / B</span><span><kbd>L</kbd> loop</span></div></footer>
+    <p id="notice" class="capability-notice" role="status" hidden></p>
+    <noscript><p class="error-message">Please enable JavaScript to use the audio player.</p></noscript>
+  </main>
+  <audio id="audio" preload="metadata"></audio>
+</body>
+</html>
+
